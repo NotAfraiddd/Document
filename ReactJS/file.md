@@ -31,3 +31,37 @@ console.log('Counter component re-rendered');
 return <h1>{this.props.count}</h1>;
 }
 ```
+# Khi nào bạn nên sử dụng useCallback và useMemo trong React?
+**useCallback()**: Dùng để ghi nhớ một hàm, giúp tránh việc tạo mới hàm trong mỗi lần render.
+
+**useMemo()**: Dùng để ghi nhớ giá trị được tính toán, giúp tránh tính toán lại khi các dependencies không thay đổi.
+
+**NOTE**
+React thực hiện **shallow comparison** nên sử dụng **useCallback** cho **hàm** thôi. Còn nếu prop **không phải hàm** thì không 
+nên sử dụng.
+
+- **Props là giá trị nguyên thủy ( number, string, boolean )**: Thì sẽ sử dụng **React.memo** ở component con luôn vì nếu giá trị 
+prop không thay đổi thì không bị render lại.
+- **Props là object hay array**: Thì cho dù **prop không thay đổi** gì hết nhưng React sẽ xem đó là **tạo ra một prop mới**, 
+khiến component bị render.
+
+# Tạo 1 Hook bất kì? Giải thích ?
+
+```
+import { useState, useCallback } from "react";
+
+const useToggle = (initialValue = false) => {
+  const [state, setState] = useState(initialValue);
+
+  const toggle = useCallback(() => {
+    setState((prevState) => !prevState);
+  }, []);
+
+  return [state, toggle];
+};
+
+export default useToggle;
+```
+
+### Note: Tại sao lại sử dụng useCallback trong tình huống này?
+Bởi vì, muốn cải thiện việc rerender khi không cần thiết. Hàm `toggle` trong `useToggle` sẽ không bị **TẠO MỚI** sau mỗi lần HOOK này được sử dụng 

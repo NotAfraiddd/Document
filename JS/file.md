@@ -56,9 +56,10 @@ Trong hàm constructor, this được sử dụng để tham chiếu đến đ�
 
 - function declaration ( khai báo hàm):
     + Được hoisted trên đầu tiên của scope nên có thể gọi trước khi khai báo.
+    VD: function Sum(a,b) {}
 - function expression ( biểu thức hàm):
     + Không được hoisted.
-
+    VD: const sum = function Sum(a,b) {}
 # Event loop
 - Khi có một tác vụ đồng bộ, nó sẽ được đưa vào call stack và thực thi ngay lập tức.
 
@@ -143,4 +144,107 @@ module bên ngoài (installed via npm) hoặc module do người dùng tự đ�
 - HTTP là giao thức không mã hóa và không an toàn.
 - HTTPS là giao thức an toàn, sử dụng mã hóa SSL/TLS để bảo vệ thông tin truyền tải và xác thực server.
 
+# Middleware trong Express.js là gì? 
+- Middleware trong Express.js là các hàm trung gian được thực thi trong quá trình xử lý request trước khi response được gửi đến client.
+    + Tạo middleware riêng biệt (UsersMiddleware.ts, ShopsMiddleware.ts).
+    + Đăng ký middleware riêng trong AppModule với forRoutes('users') và forRoutes('shops').
+    + Mỗi route có middleware riêng biệt, đảm bảo code rõ ràng và dễ bảo trì.
 
+# Cách sử dụng dotenv để quản lý biến môi trường (environment variables)?
+- dotenv là một thư viện giúp bạn quản lý các biến môi trường trong dự án Node.js thông qua file .env, giúp tách biệt thông tin nhạy 
+cảm như API keys, database credentials khỏi mã nguồn.
+
++ Cài đặt dotenv bằng npm install dotenv
++ Tạo file .env để chứa biến môi trường (KEY=VALUE)
++ Load dotenv trong code bằng require('dotenv').config()
++ Không push file .env lên Git bằng cách thêm vào .gitignore
++ Có thể dùng dotenv-safe để đảm bảo tất cả biến cần thiết đều có giá trị
+💡 Lưu ý: Nếu deploy trên cloud server như AWS hoặc Heroku, có thể đặt biến môi trường trực tiếp mà không cần .env.
+
+# So sánh fs.readFileSync vs fs.readFile vs fs.createReadStream
+fs.readFileSync:
+ + Cách hoạt động: Đợi kết quả trước khi chạy tiếp.
+ + Ưu điểm: Đơn giản, dễ hiểu.
+ + Nhược điểm: Chặn chương trình, gây lag nếu xử lý dữ liệu lớn.
+ + Khi nào dùng?: Khi xử lý đơn giản, file nhỏ.
+fs.readFile:
+ + Cách hoạt động: Không đợi, chạy tiếp ngay lập tức.
+ + Ưu điểm: Không bị chặn, nhanh hơn so với blocking.
+ + Nhược điểm: Cần dùng callback/Promise để xử lý dữ liệu.
+ + Khi nào dùng?: Xử lý I/O, đọc API, truy vấn Database.
+fs.createReadStream:
+ + Cách hoạt động: Đọc/Ghi từng phần nhỏ (chunk) thay vì toàn bộ file.
+ + Ưu điểm: Tiết kiệm RAM, tối ưu cho file lớn.
+ + Nhược điểm: Cần xử lý sự kiện, phức tạp hơn một chút.
+ + Khi nào dùng?: Khi xử lý file lớn, stream video, log.
+
+# JSON Web Token (JWT) là gì? Tại sao cần sử dụng?
+- JWT (JSON Web Token) là một chuẩn mã hóa thông tin dạng chuỗi JSON, được sử dụng trong xác thực người dùng (authentication) và phân quyền truy cập (authorization).
+- cấu trúc gồm 3 phần: Header.Payload.Signature
+    + Header: Chứa thông tin về thuật toán mã hóa, thường là HS256 hoặc RS256.
+    + Payload: Chứa dữ liệu (claims), có thể là user ID, role, v.v.
+    + Signature: Chữ ký số để đảm bảo JWT không bị giả mạo.
+- Cách hoạt động:
+    + User đăng nhập → Server xác thực thông tin & tạo JWT.
+    + Server trả về JWT cho client (trình duyệt, mobile app, v.v.).
+    + Client gửi JWT trong Authorization header của mỗi request.
+    + Server kiểm tra JWT → Nếu hợp lệ, trả về dữ liệu → Nếu không, từ chối truy cập.
+
+# CORS là gì? Cách cấu hình CORS trong NestJS?
+- CORS (Cross-Origin Resource Sharing) là một cơ chế bảo mật của trình duyệt ngăn chặn hoặc cho phép các request được gửi từ một domain khác với domain của server.
+
+#  So sánh Cluster vs Worker Threads
+- Cluster
+    + Cách hoạt động: nhiều process.
+    + Chia sẻ bộ nhớ: Không( mỗi process riêng biệt)
+    + Tính toán nặng: Không tốt, do cần truyền dữ liệu giữa các process.
+    + Tốc độ khởi tạo: chậm do khởi tạo process mới.
+    + Khi nào dùng: xử lí nhiều request song song.
+- Worker Threads
+    + Cách hoạt động: nhiều thread trong cùng 1 process.
+    + Chia sẻ bộ nhớ: có bằng cách dùng sharedArrayBuffer.
+    + Tính toán nặng: Tốt, vì có thể chia sẻ bộ nhớ
+    + Tốc độ khởi tạo: Nhanh hơn (do chỉ tạo thread)
+    + Khi nào dùng: Xử lý tác vụ tính toán nặng, chia sẻ bộ nhớ
+
+# Khi nào nên sử dụng Redis trong ứng dụng Node.js?
+- Redis là một hệ thống lưu trữ dữ liệu dạng key-value trên RAM.
+- Khi nào nên dùng:
+    + Rate Limiting (Giới hạn số request): Giới hạn số request từ một IP để tránh spam hoặc tấn công DDOS.
+```
+    const limiter = rateLimit({
+    store: new RedisStore({ sendCommand: (...args) => redisClient.call(...args) }),
+    windowMs: 60 * 1000, // 1 phút
+    max: 10, // Tối đa 10 request mỗi phút
+    });
+```
+    + Caching: API cần phản hồi nhanh, giảm tải DB
+    + Session Management: Lưu session user khi dùng JWT/session-based auth. --> thích hợp cho SSR.
+
+# WebSocket là gì? Khi nào sử dụng WebSocket thay vì HTTP?
+- WebSocket là một giao thức giao tiếp hai chiều giữa client và server trên một kết nối TCP duy nhất.
+
+- Lợi ích của WebSocket so với HTTP
+    + Duy trì kết nối liên tục, không cần request lại từ client.
+    + Độ trễ thấp, tối ưu cho dữ liệu real-time.
+    + Giảm băng thông, vì không gửi lại headers mỗi lần như HTTP.
+
+# Cách tối ưu hiệu suất một API trong Node.js?
+- Tối ưu Truy vấn Database:
+    + Sử dụng index trong database để tăng tốc độ truy vấn.
+    + Chỉ lấy những trường cần thiết
+    + Phân trang (Pagination)
+    + Sử dụng cache (Redis)
+- Sử dụng Caching (Bộ nhớ đệm): Redis giúp giảm tải database bằng cách lưu dữ liệu vào bộ nhớ đệm.
+- Sử dụng Asynchronous & Streaming:
+    + Dùng async/await hoặc streaming để xử lý dữ liệu lớn hiệu quả hơn.
+    + Dùng fs.createReadStream thay vì fs.readFileSync khi đọc file lớn
+- Tối ưu Middleware & Request Handling
+    + Giới hạn request bằng express-rate-limit để tránh DDOS
+    + Dùng compression để giảm kích thước response.
+- Sử dụng GraphQL nếu cần API linh hoạt
+
+# Giải thích về Dependency Injection trong Node.js?
++ không sử dụng Dependency Injection thì constructor từ các service không thể linh hoạt, vì nó tạo trực tiếp một instance từ DatabaseService trong constructor, làm nó
+phụ thuộc chặt chẽ vào DatabaseService.
++ ử dụng Dependency Injection, DatabaseService được truyền từ bên ngoài vào UserService thông qua constructor

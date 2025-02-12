@@ -65,3 +65,40 @@ export default useToggle;
 
 ### Note: Tại sao lại sử dụng useCallback trong tình huống này?
 Bởi vì, muốn cải thiện việc rerender khi không cần thiết. Hàm `toggle` trong `useToggle` sẽ không bị **TẠO MỚI** sau mỗi lần HOOK này được sử dụng 
+
+# Phân biệt call, apply, bind.
+```
+const person = {
+    name: "Alice",
+    greet: function (message) {
+        console.log(${message}, my name is ${this.name});
+    }
+};
+const anotherPerson = { name: "Bob" };
+```
+**call():** gọi hàm ngay, nhưng truyền tham số riêng lẽ.
+  - ví dụ: person.greet.call(anotherPerson,"Hello");
+
+**bind():** Không gọi hàm ngay, nhưng trả về một hàm mới.
+
+```
+const newGreet = person.greet.bind(anotherPerson, "Hey");
+newGreet();  
+👉 Output: "Hey, my name is Bob"
+```
+======================
+
+```
+const person = {
+    name: "Alice",
+    greet: function (greeting, punctuation) {
+        console.log(`${greeting}, my name is ${this.name}${punctuation}`);
+    }
+};
+const anotherPerson = { name: "Bob" };
+```
+
+**apply():** gọi hàm ngay, nhưng truyền tham số là mảng.
+ - ví dụ: person.greet.apply(anotherPerson,["Hello","!"]);
+ --> output:  "Hello, my name is Bob!"
+

@@ -243,8 +243,3 @@ fs.createReadStream:
     + Giới hạn request bằng express-rate-limit để tránh DDOS
     + Dùng compression để giảm kích thước response.
 - Sử dụng GraphQL nếu cần API linh hoạt
-
-# Giải thích về Dependency Injection trong Node.js?
-+ không sử dụng Dependency Injection thì constructor từ các service không thể linh hoạt, vì nó tạo trực tiếp một instance từ DatabaseService trong constructor, làm nó
-phụ thuộc chặt chẽ vào DatabaseService.
-+ ử dụng Dependency Injection, DatabaseService được truyền từ bên ngoài vào UserService thông qua constructor
